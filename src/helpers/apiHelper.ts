@@ -1,5 +1,5 @@
 const TOKEN_KEY = "tripbuddy_token";
-const TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
+const TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24;
 
 export interface ApiResponse<T> {
   success: boolean;

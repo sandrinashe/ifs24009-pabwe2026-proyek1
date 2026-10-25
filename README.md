@@ -27,7 +27,8 @@ bun run dev            # http://localhost:3000
 
 - **Routing**: dikelola Nuxt (`NuxtPage`). Halaman feature-based didaftarkan di `src/routes.ts` lewat hook `pages:extend` (`nuxt.config.ts`); akses dijaga middleware global `src/middleware/auth.global.ts` berdasarkan meta `requiresAuth` / `guestOnly`.
 - **State**: store Pinia hanya mengembalikan `ActionResult` (`{ success, message }`); notifikasi UI ditampilkan komponen lewat `notifyResult` (`src/helpers/notifyHelper.ts`).
-- **Token**: disimpan di cookie `SameSite=Strict` (+ `Secure` di HTTPS), bukan localStorage.
+- **Token**: disimpan di cookie `SameSite=Strict` (+ `Secure` di HTTPS, masa berlaku 1 hari), bukan localStorage. Cookie dibuat dari JavaScript sehingga tidak `HttpOnly`; risiko XSS dikurangi dengan tidak merender HTML mentah (`v-html`) dan masa berlaku singkat. Untuk `HttpOnly` penuh, back-end perlu mengirim cookie lewat `Set-Cookie`.
+- **Modal & validasi**: shell modal dipakai bersama lewat `FormModal.vue`; parameter rute `tripId` dibatasi numerik (`:tripId(\\d+)`), rentang tanggal perjalanan divalidasi, dan error bertipe `unknown` ditangani lewat `getErrorMessage`.
 - **Gambar**: dikompres di browser lalu diunggah sebagai `multipart/form-data` ke `POST /uploads` (field `file`); database hanya menyimpan URL.
 
 ### Kontrak endpoint upload (back-end)

@@ -7,6 +7,7 @@ import {
   putAccessToken,
   removeAccessToken,
 } from "../../../helpers/apiHelper";
+import { getErrorMessage } from "../../../helpers/errorHelper";
 import type { ActionResult } from "../../../helpers/notifyHelper";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -15,7 +16,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const failure = (error: unknown): ActionResult => ({
     success: false,
-    message: (error as Error).message,
+    message: getErrorMessage(error),
   });
 
   async function asyncLogin(

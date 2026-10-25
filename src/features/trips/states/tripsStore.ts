@@ -6,6 +6,7 @@ import * as expenseApi from "../api/expenseApi";
 import type { Trip, TripDetail, TripPayload } from "../api/tripApi";
 import type { Itinerary, ItineraryPayload } from "../api/itineraryApi";
 import type { Expense, ExpensePayload } from "../api/expenseApi";
+import { getErrorMessage } from "../../../helpers/errorHelper";
 import type { ActionResult } from "../../../helpers/notifyHelper";
 
 export const useTripsStore = defineStore("trips", () => {
@@ -27,7 +28,7 @@ export const useTripsStore = defineStore("trips", () => {
       await action();
       return { success: true, message: successMessage };
     } catch (error) {
-      return { success: false, message: (error as Error).message };
+      return { success: false, message: getErrorMessage(error) };
     }
   }
 

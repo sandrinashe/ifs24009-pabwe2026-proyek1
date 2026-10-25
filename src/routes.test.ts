@@ -23,6 +23,11 @@ describe("pageRoutes", () => {
     expect(pageRoutes.find((r) => r.path === "/")?.meta).toEqual({ requiresAuth: true });
   });
 
+  it("hanya menerima tripId numerik pada rute detail", () => {
+    const detail = flatten(pageRoutes).find((r) => r.name === "trip-detail");
+    expect(detail?.path).toBe("trips/:tripId(\\d+)");
+  });
+
   it("setiap file komponen benar-benar ada", () => {
     for (const route of flatten(pageRoutes)) {
       const path = resolve(process.cwd(), "src", route.file);

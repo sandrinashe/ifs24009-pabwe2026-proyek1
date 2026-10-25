@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { uploadImage } from "../api/uploadApi";
 import { compressImage } from "../../../helpers/imageHelper";
+import { getErrorMessage } from "../../../helpers/errorHelper";
 import { showErrorDialog } from "../../../helpers/toolsHelper";
 
 const props = withDefaults(
@@ -28,7 +29,7 @@ async function onChange(event: Event) {
     const { url } = await uploadImage(blob, `${Date.now()}.jpg`);
     emit("update:modelValue", url);
   } catch (error) {
-    showErrorDialog((error as Error).message);
+    showErrorDialog(getErrorMessage(error));
   } finally {
     isUploading.value = false;
   }

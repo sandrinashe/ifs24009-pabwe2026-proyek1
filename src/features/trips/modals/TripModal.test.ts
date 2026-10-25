@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises } from "@vue/test-utils";
 import * as tripApi from "../api/tripApi";
 import { deferred, makeTrip, renderWithProviders } from "../../../test-utils";
+import { showErrorDialog } from "../../../helpers/toolsHelper";
 import TripModal from "./TripModal.vue";
 
 vi.mock("../api/tripApi");
@@ -52,6 +53,21 @@ describe("TripModal", () => {
     expect(wrapper.emitted("saved")).toHaveLength(1);
   });
 
+  it("menolak tanggal selesai sebelum tanggal mulai tanpa memanggil API", async () => {
+    const { wrapper } = await renderWithProviders(TripModal, {
+      props: { open: true, trip: makeTrip() },
+    });
+    await wrapper.find("#trip-start").setValue("2026-12-10");
+    await wrapper.find("#trip-end").setValue("2026-12-01");
+    await wrapper.find("form").trigger("submit");
+    await flushPromises();
+    expect(showErrorDialog).toHaveBeenCalledWith(
+      "Tanggal selesai tidak boleh sebelum tanggal mulai"
+    );
+    expect(tripApi.updateTrip).not.toHaveBeenCalled();
+    expect(wrapper.emitted("saved")).toBeUndefined();
+  });
+
   it("mengisi form dengan data perjalanan saat mengubah", async () => {
     const { wrapper } = await renderWithProviders(TripModal, {
       props: { open: true, trip: makeTrip({ id: 7 }) },
@@ -85,6 +101,8 @@ describe("TripModal", () => {
     const { wrapper } = await renderWithProviders(TripModal, {
       props: { open: true, trip: null },
     });
+    await wrapper.find("#trip-start").setValue("2026-12-01");
+    await wrapper.find("#trip-end").setValue("2026-12-05");
     await wrapper.find("form").trigger("submit");
     await flushPromises();
     expect(wrapper.emitted("saved")).toBeUndefined();
@@ -96,6 +114,8 @@ describe("TripModal", () => {
     const { wrapper } = await renderWithProviders(TripModal, {
       props: { open: true, trip: null },
     });
+    await wrapper.find("#trip-start").setValue("2026-12-01");
+    await wrapper.find("#trip-end").setValue("2026-12-05");
     await wrapper.find("form").trigger("submit");
     const submit = wrapper.find('button[type="submit"]');
     expect(submit.text()).toBe("Menyimpan...");

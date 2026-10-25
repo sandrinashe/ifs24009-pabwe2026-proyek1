@@ -44,7 +44,7 @@ export const pageRoutes: PageRoute[] = [
         file: "features/auth/pages/ProfilePage.vue",
       },
       {
-        path: "trips/:tripId",
+        path: "trips/:tripId(\\d+)",
         name: "trip-detail",
         file: "features/trips/pages/DetailPage.vue",
       },
