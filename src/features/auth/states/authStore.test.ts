@@ -81,6 +81,27 @@ describe("authStore", () => {
     });
   });
 
+  describe("asyncUpdateProfile", () => {
+    it("memperbarui pengguna dan menampilkan notifikasi sukses", async () => {
+      const updated = { ...user, name: "Budi Baru", avatar: null };
+      vi.mocked(authApi.updateProfile).mockResolvedValue(updated);
+      const store = useAuthStore();
+      expect(await store.asyncUpdateProfile({ name: "Budi Baru" })).toBe(true);
+      expect(authApi.updateProfile).toHaveBeenCalledWith({ name: "Budi Baru" });
+      expect(store.user).toEqual(updated);
+      expect(showSuccessDialog).toHaveBeenCalledWith("Profil berhasil diperbarui");
+    });
+
+    it("menampilkan error dan mempertahankan data lama jika gagal", async () => {
+      vi.mocked(authApi.updateProfile).mockRejectedValue(new Error("Gambar terlalu besar"));
+      const store = useAuthStore();
+      store.user = user;
+      expect(await store.asyncUpdateProfile({ name: "X" })).toBe(false);
+      expect(showErrorDialog).toHaveBeenCalledWith("Gambar terlalu besar");
+      expect(store.user).toEqual(user);
+    });
+  });
+
   it("logout menghapus token dan pengguna", () => {
     putAccessToken("tok");
     const store = useAuthStore();

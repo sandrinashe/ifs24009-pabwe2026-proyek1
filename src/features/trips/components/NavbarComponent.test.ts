@@ -13,6 +13,36 @@ describe("NavbarComponent", () => {
     expect(wrapper.find('[data-testid="user-name"]').text()).toBe("Budi");
   });
 
+  it("menautkan ke halaman profil dan menampilkan inisial jika belum ada foto", async () => {
+    const { wrapper, pinia } = await renderWithProviders(NavbarComponent);
+    useAuthStore(pinia).user = { id: 1, name: "budi", email: "b@e.c", avatar: null };
+    await flushPromises();
+    const link = wrapper.find('a[href="/profile"]');
+    expect(link.text()).toContain("Profil saya");
+    expect(wrapper.find('[data-testid="user-initial"]').text()).toBe("B");
+    expect(wrapper.find('[data-testid="user-avatar"]').exists()).toBe(false);
+  });
+
+  it("menampilkan foto profil jika tersedia", async () => {
+    const { wrapper, pinia } = await renderWithProviders(NavbarComponent);
+    useAuthStore(pinia).user = {
+      id: 1,
+      name: "Budi",
+      email: "b@e.c",
+      avatar: "data:image/jpeg;base64,AAAA",
+    };
+    await flushPromises();
+    expect(wrapper.find('[data-testid="user-avatar"]').attributes("src")).toBe(
+      "data:image/jpeg;base64,AAAA"
+    );
+    expect(wrapper.find('[data-testid="user-initial"]').exists()).toBe(false);
+  });
+
+  it("menampilkan tanda tanya sebagai inisial jika pengguna belum tersedia", async () => {
+    const { wrapper } = await renderWithProviders(NavbarComponent);
+    expect(wrapper.find('[data-testid="user-initial"]').text()).toBe("?");
+  });
+
   it("tidak error jika data pengguna belum tersedia", async () => {
     const { wrapper } = await renderWithProviders(NavbarComponent);
     expect(wrapper.find('[data-testid="user-name"]').text()).toBe("");

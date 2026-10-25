@@ -36,6 +36,16 @@ export const showErrorDialog = (message: string) =>
     confirmButtonColor: "#4f46e5",
   });
 
+export const showImageDialog = (imageUrl: string, title: string) =>
+  Swal.fire({
+    title,
+    imageUrl,
+    imageAlt: title,
+    showConfirmButton: false,
+    showCloseButton: true,
+    width: 600,
+  });
+
 export async function showConfirmDialog(
   title: string,
   text: string

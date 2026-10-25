@@ -7,6 +7,7 @@ import {
   getUsagePercentage,
   showConfirmDialog,
   showErrorDialog,
+  showImageDialog,
   showSuccessDialog,
   usageBarClass,
 } from "./toolsHelper";
@@ -29,6 +30,17 @@ describe("toolsHelper", () => {
     showErrorDialog("Gagal");
     expect(Swal.fire).toHaveBeenCalledWith(
       expect.objectContaining({ icon: "error", text: "Gagal" })
+    );
+  });
+
+  it("showImageDialog menampilkan gambar dengan teks alternatif", () => {
+    showImageDialog("data:image/jpeg;base64,AAAA", "Bukti: Hotel");
+    expect(Swal.fire).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Bukti: Hotel",
+        imageUrl: "data:image/jpeg;base64,AAAA",
+        imageAlt: "Bukti: Hotel",
+      })
     );
   });
 

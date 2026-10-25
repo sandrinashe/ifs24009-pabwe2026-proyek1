@@ -1,7 +1,7 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import * as authApi from "../api/authApi";
-import type { User } from "../api/authApi";
+import type { ProfilePayload, User } from "../api/authApi";
 import {
   getAccessToken,
   putAccessToken,
@@ -56,6 +56,17 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  async function asyncUpdateProfile(payload: ProfilePayload): Promise<boolean> {
+    try {
+      user.value = await authApi.updateProfile(payload);
+      showSuccessDialog("Profil berhasil diperbarui");
+      return true;
+    } catch (error) {
+      showErrorDialog((error as Error).message);
+      return false;
+    }
+  }
+
   function logout(): void {
     removeAccessToken();
     user.value = null;
@@ -67,6 +78,7 @@ export const useAuthStore = defineStore("auth", () => {
     asyncLogin,
     asyncRegister,
     asyncRestoreSession,
+    asyncUpdateProfile,
     logout,
   };
 });

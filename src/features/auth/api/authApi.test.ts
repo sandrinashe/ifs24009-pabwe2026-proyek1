@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { apiFetch } from "../../../helpers/apiHelper";
-import { getMe, login, register } from "./authApi";
+import { getMe, login, register, updateProfile } from "./authApi";
 
 vi.mock("../../../helpers/apiHelper", () => ({ apiFetch: vi.fn() }));
 
@@ -22,6 +22,14 @@ describe("authApi", () => {
     expect(apiFetch).toHaveBeenCalledWith("/auth/register", {
       method: "POST",
       body: { name: "Budi", email: "a@b.c", password: "rahasia" },
+    });
+  });
+
+  it("updateProfile memanggil PUT /auth/profile", async () => {
+    await updateProfile({ name: "Budi", avatar: null });
+    expect(apiFetch).toHaveBeenCalledWith("/auth/profile", {
+      method: "PUT",
+      body: { name: "Budi", avatar: null },
     });
   });
 

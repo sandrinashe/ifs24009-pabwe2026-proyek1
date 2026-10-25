@@ -5,6 +5,7 @@ import {
   CATEGORY_COLORS,
   formatCurrency,
   formatDate,
+  showImageDialog,
 } from "../../../helpers/toolsHelper";
 
 defineProps<{ items: Expense[] }>();
@@ -37,6 +38,15 @@ defineEmits<{
           </p>
         </div>
         <div class="flex items-center gap-2">
+          <button
+            v-if="item.receipt_image"
+            type="button"
+            class="shrink-0 overflow-hidden rounded-lg border border-slate-200"
+            :aria-label="`Lihat bukti ${item.name}`"
+            @click="showImageDialog(item.receipt_image, `Bukti: ${item.name}`)"
+          >
+            <img :src="item.receipt_image" alt="" class="h-10 w-10 object-cover" />
+          </button>
           <span class="font-bold">{{ formatCurrency(item.amount) }}</span>
           <button class="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600" aria-label="Hapus pengeluaran" @click="$emit('delete', item)">
             <Trash2 :size="16" />

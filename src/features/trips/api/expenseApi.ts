@@ -7,6 +7,7 @@ export interface Expense {
   amount: number;
   date: string;
   category: string;
+  receipt_image?: string | null;
 }
 
 export interface ExpensePayload {
@@ -14,6 +15,7 @@ export interface ExpensePayload {
   amount: number;
   date: string;
   category: string;
+  receipt_image?: string | null;
 }
 
 export const getExpenses = (tripId: number) =>

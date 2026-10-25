@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises } from "@vue/test-utils";
+import { compressImage } from "../../../helpers/imageHelper";
 import * as tripApi from "../api/tripApi";
 import * as expenseApi from "../api/expenseApi";
 import { useTripsStore } from "../states/tripsStore";
@@ -13,6 +14,7 @@ import ExpenseModal from "./ExpenseModal.vue";
 
 vi.mock("../api/tripApi");
 vi.mock("../api/expenseApi");
+vi.mock("../../../helpers/imageHelper");
 vi.mock("../../../helpers/toolsHelper", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../../../helpers/toolsHelper")>()),
   showErrorDialog: vi.fn(),
@@ -61,8 +63,35 @@ describe("ExpenseModal", () => {
       amount: 150000,
       date: "2026-12-02",
       category: "Makanan",
+      receipt_image: null,
     });
     expect(wrapper.emitted("saved")).toHaveLength(1);
+  });
+
+  it("mengirim foto bukti yang dipilih dan mengosongkannya saat dibuka kembali", async () => {
+    vi.mocked(compressImage).mockResolvedValue("data:image/jpeg;base64,AAAA");
+    const { wrapper } = await render({ open: true, defaultDate: "2026-12-01" });
+    const picker = wrapper.find("#ex-receipt");
+    Object.defineProperty(picker.element, "files", {
+      value: [new File(["x"], "struk.png", { type: "image/png" })],
+      configurable: true,
+    });
+    await picker.trigger("change");
+    await flushPromises();
+    expect(wrapper.find("img").attributes("src")).toBe("data:image/jpeg;base64,AAAA");
+
+    await wrapper.find("#ex-name").setValue("Makan malam");
+    await wrapper.find("#ex-amount").setValue("150000");
+    await wrapper.find("form").trigger("submit");
+    await flushPromises();
+    expect(expenseApi.createExpense).toHaveBeenCalledWith(
+      1,
+      expect.objectContaining({ receipt_image: "data:image/jpeg;base64,AAAA" })
+    );
+
+    await wrapper.setProps({ open: false });
+    await wrapper.setProps({ open: true });
+    expect(wrapper.find("img").exists()).toBe(false);
   });
 
   it("mengosongkan form setiap kali dibuka kembali", async () => {

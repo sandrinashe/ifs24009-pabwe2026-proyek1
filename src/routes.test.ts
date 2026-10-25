@@ -9,7 +9,7 @@ describe("routes", () => {
   it("mendefinisikan rute auth, dashboard, dan 404", () => {
     const names = flatten(routes).map((r) => r.name);
     expect(names).toEqual(
-      expect.arrayContaining(["login", "register", "home", "trip-detail", "not-found"])
+      expect.arrayContaining(["login", "register", "home", "profile", "trip-detail", "not-found"])
     );
   });
 

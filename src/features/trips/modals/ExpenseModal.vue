@@ -2,6 +2,7 @@
 import { reactive, ref, watch } from "vue";
 import { X } from "lucide-vue-next";
 import { EXPENSE_CATEGORIES } from "../../../helpers/toolsHelper";
+import ImagePicker from "../../common/components/ImagePicker.vue";
 import { useTripsStore } from "../states/tripsStore";
 
 const props = defineProps<{ open: boolean; defaultDate: string }>();
@@ -9,6 +10,7 @@ const emit = defineEmits<{ (e: "close"): void; (e: "saved"): void }>();
 
 const store = useTripsStore();
 const isSubmitting = ref(false);
+const receipt = ref<string | null>(null);
 const form = reactive({
   name: "",
   amount: 0,
@@ -24,6 +26,7 @@ watch(
     form.amount = 0;
     form.date = props.defaultDate;
     form.category = EXPENSE_CATEGORIES[0];
+    receipt.value = null;
   },
   { immediate: true }
 );
@@ -33,6 +36,7 @@ async function onSubmit() {
   const success = await store.asyncSaveExpense({
     ...form,
     amount: Number(form.amount),
+    receipt_image: receipt.value,
   });
   isSubmitting.value = false;
   if (success) emit("saved");
@@ -76,6 +80,12 @@ async function onSubmit() {
           </option>
         </select>
       </div>
+
+      <ImagePicker
+        v-model="receipt"
+        input-id="ex-receipt"
+        label="Foto Bukti / Struk (opsional)"
+      />
 
       <div class="flex justify-end gap-2 pt-2">
         <button type="button" class="btn-ghost" @click="emit('close')">Batal</button>

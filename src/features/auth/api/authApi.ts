@@ -4,6 +4,13 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  avatar?: string | null;
+}
+
+export interface ProfilePayload {
+  name: string;
+  /** string = foto baru, null = hapus foto, tidak dikirim = tidak diubah */
+  avatar?: string | null;
 }
 
 export interface LoginResult {
@@ -24,3 +31,6 @@ export const register = (name: string, email: string, password: string) =>
   });
 
 export const getMe = () => apiFetch<User>("/auth/me");
+
+export const updateProfile = (payload: ProfilePayload) =>
+  apiFetch<User>("/auth/profile", { method: "PUT", body: payload });
