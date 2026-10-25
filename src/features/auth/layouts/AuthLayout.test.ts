@@ -26,6 +26,14 @@ describe("AuthLayout", () => {
     expect(wrapper.find('[data-testid="stub"]').exists()).toBe(true);
   });
 
+  it("memiliki landmark main dan satu h1", async () => {
+    const { wrapper } = await renderWithProviders(AuthLayout, {
+      route: "/auth/login",
+    });
+    expect(wrapper.find("main").exists()).toBe(true);
+    expect(wrapper.findAll("h1")).toHaveLength(1);
+  });
+
   it("tetap di halaman auth jika belum login", async () => {
     const { router } = await renderWithProviders(AuthLayout, {
       route: "/auth/login",

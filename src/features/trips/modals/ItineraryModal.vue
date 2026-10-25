@@ -53,7 +53,7 @@ async function onSubmit() {
         <h2 class="text-lg font-extrabold">
           {{ itinerary ? "Ubah Agenda" : "Tambah Agenda" }}
         </h2>
-        <button type="button" class="rounded-lg p-1 text-slate-400 hover:bg-slate-100" aria-label="Tutup" @click="emit('close')">
+        <button type="button" class="rounded-lg p-1 text-slate-500 hover:bg-slate-100" aria-label="Tutup" @click="emit('close')">
           <X :size="20" />
         </button>
       </div>

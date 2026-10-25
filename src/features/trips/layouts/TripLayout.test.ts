@@ -22,7 +22,19 @@ describe("TripLayout", () => {
     });
     await flushPromises();
     expect(router.currentRoute.value.path).toBe("/auth/login");
-    expect(wrapper.find("main").exists()).toBe(false);
+    expect(wrapper.find('[data-testid="stub"]').exists()).toBe(false);
+  });
+
+  it("menyediakan landmark main dan h1 sejak sebelum sesi selesai dipulihkan", async () => {
+    putAccessToken("tok");
+    const { wrapper } = await renderWithProviders(TripLayout, {
+      route: "/",
+    });
+    expect(wrapper.find("main").exists()).toBe(true);
+    expect(wrapper.find("main h1").text()).toBe("TripBuddy");
+    expect(wrapper.find('[data-testid="stub"]').exists()).toBe(false);
+    await flushPromises();
+    expect(wrapper.find("main h1").exists()).toBe(false);
   });
 
   it("menampilkan navbar dan konten jika sesi valid", async () => {
@@ -30,11 +42,11 @@ describe("TripLayout", () => {
     const { wrapper, router } = await renderWithProviders(TripLayout, {
       route: "/",
     });
-    expect(wrapper.find("main").exists()).toBe(false);
     await flushPromises();
     expect(router.currentRoute.value.path).toBe("/");
     expect(wrapper.find("header").exists()).toBe(true);
     expect(wrapper.find("main").exists()).toBe(true);
+    expect(wrapper.find('[data-testid="stub"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="user-name"]').text()).toBe("Budi");
   });
 });

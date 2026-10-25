@@ -13,7 +13,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div
+  <main
     class="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-50 via-white to-indigo-50 p-4"
   >
     <div class="w-full max-w-md">
@@ -24,7 +24,7 @@ onMounted(async () => {
           <Plane :size="28" />
         </div>
         <h1 class="text-3xl font-extrabold tracking-tight">TripBuddy</h1>
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="mt-1 text-sm text-slate-600">
           Rencanakan perjalanan &amp; pantau anggaran wisatamu
         </p>
       </div>
@@ -33,14 +33,14 @@ onMounted(async () => {
         <nav class="mb-6 grid grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1">
           <RouterLink
             to="/auth/login"
-            class="rounded-xl py-2 text-center text-sm font-semibold text-slate-500"
+            class="rounded-xl py-2 text-center text-sm font-semibold text-slate-600"
             active-class="!bg-white !text-brand-600 shadow-sm"
           >
             Masuk Akun
           </RouterLink>
           <RouterLink
             to="/auth/register"
-            class="rounded-xl py-2 text-center text-sm font-semibold text-slate-500"
+            class="rounded-xl py-2 text-center text-sm font-semibold text-slate-600"
             active-class="!bg-white !text-brand-600 shadow-sm"
           >
             Daftar Baru
@@ -49,5 +49,5 @@ onMounted(async () => {
         <RouterView />
       </div>
     </div>
-  </div>
+  </main>
 </template>

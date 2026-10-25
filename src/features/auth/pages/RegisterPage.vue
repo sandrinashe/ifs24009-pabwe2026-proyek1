@@ -29,7 +29,7 @@ async function onSubmit() {
     <div>
       <label class="label-field" for="register-name">Nama Lengkap</label>
       <div class="relative">
-        <User :size="16" class="absolute left-3 top-3.5 text-slate-400" />
+        <User :size="16" class="absolute left-3 top-3.5 text-slate-500" />
         <input
           id="register-name"
           type="text"
@@ -44,7 +44,7 @@ async function onSubmit() {
     <div>
       <label class="label-field" for="register-email">Alamat Email</label>
       <div class="relative">
-        <Mail :size="16" class="absolute left-3 top-3.5 text-slate-400" />
+        <Mail :size="16" class="absolute left-3 top-3.5 text-slate-500" />
         <input
           id="register-email"
           type="email"
@@ -59,7 +59,7 @@ async function onSubmit() {
     <div>
       <label class="label-field" for="register-password">Kata Sandi</label>
       <div class="relative">
-        <Lock :size="16" class="absolute left-3 top-3.5 text-slate-400" />
+        <Lock :size="16" class="absolute left-3 top-3.5 text-slate-500" />
         <input
           id="register-password"
           type="password"

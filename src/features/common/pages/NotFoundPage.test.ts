@@ -6,6 +6,7 @@ describe("NotFoundPage", () => {
   it("menampilkan 404 dan tautan kembali ke beranda", async () => {
     const { wrapper } = await renderWithProviders(NotFoundPage);
     expect(wrapper.text()).toContain("404");
+    expect(wrapper.find("main h1").text()).toBe("404");
     expect(wrapper.find("a").attributes("href")).toBe("/");
   });
 });

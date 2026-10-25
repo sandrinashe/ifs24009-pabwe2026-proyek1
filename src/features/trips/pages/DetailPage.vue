@@ -75,17 +75,17 @@ async function onTripSaved() {
 
 <template>
   <div v-if="store.current" class="space-y-6">
-    <RouterLink to="/" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-brand-600">
+    <RouterLink to="/" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-brand-600">
       <ArrowLeft :size="16" /> Semua Perjalanan
     </RouterLink>
 
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div class="space-y-1.5">
         <h1 class="text-2xl font-extrabold" data-testid="trip-title">{{ store.current.title }}</h1>
-        <p class="flex items-center gap-1.5 text-sm text-slate-500">
+        <p class="flex items-center gap-1.5 text-sm text-slate-600">
           <MapPin :size="14" /> {{ store.current.destination }}
         </p>
-        <p class="flex items-center gap-1.5 text-sm text-slate-500">
+        <p class="flex items-center gap-1.5 text-sm text-slate-600">
           <CalendarDays :size="14" />
           {{ formatDate(store.current.start_date) }} – {{ formatDate(store.current.end_date) }}
           ({{ getTripDays(store.current.start_date, store.current.end_date) }} hari)
@@ -106,7 +106,7 @@ async function onTripSaved() {
     <div class="inline-flex rounded-2xl bg-slate-100 p-1 text-sm font-semibold">
       <button
         class="rounded-xl px-4 py-2"
-        :class="tab === 'itinerary' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500'"
+        :class="tab === 'itinerary' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-600'"
         data-testid="tab-itinerary"
         @click="tab = 'itinerary'"
       >
@@ -114,7 +114,7 @@ async function onTripSaved() {
       </button>
       <button
         class="rounded-xl px-4 py-2"
-        :class="tab === 'expense' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500'"
+        :class="tab === 'expense' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-600'"
         data-testid="tab-expense"
         @click="tab = 'expense'"
       >
@@ -155,5 +155,8 @@ async function onTripSaved() {
       @saved="isExpenseModalOpen = false"
     />
   </div>
-  <p v-else class="text-sm text-slate-400">Memuat detail perjalanan...</p>
+  <div v-else>
+    <h1 class="sr-only">Detail Perjalanan</h1>
+    <p class="text-sm text-slate-600" role="status">Memuat detail perjalanan...</p>
+  </div>
 </template>

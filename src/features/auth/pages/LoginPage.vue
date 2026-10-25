@@ -24,7 +24,7 @@ async function onSubmit() {
     <div>
       <label class="label-field" for="username">Alamat Email</label>
       <div class="relative">
-        <Mail :size="16" class="absolute left-3 top-3.5 text-slate-400" />
+        <Mail :size="16" class="absolute left-3 top-3.5 text-slate-500" />
         <input
           id="username"
           name="username"
@@ -41,7 +41,7 @@ async function onSubmit() {
     <div>
       <label class="label-field" for="password">Kata Sandi</label>
       <div class="relative">
-        <Lock :size="16" class="absolute left-3 top-3.5 text-slate-400" />
+        <Lock :size="16" class="absolute left-3 top-3.5 text-slate-500" />
         <input
           id="password"
           name="password"

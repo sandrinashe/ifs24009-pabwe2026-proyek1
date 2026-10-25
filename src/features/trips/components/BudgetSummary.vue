@@ -14,7 +14,7 @@ defineProps<{ summary: TripSummary }>();
   <section class="space-y-4">
     <div class="grid gap-4 sm:grid-cols-3">
       <div class="card p-5">
-        <div class="mb-2 flex items-center gap-2 text-xs font-bold uppercase text-slate-500">
+        <div class="mb-2 flex items-center gap-2 text-xs font-bold uppercase text-slate-600">
           <Wallet :size="16" /> Total Anggaran
         </div>
         <p class="text-xl font-extrabold" data-testid="total-budget">
@@ -22,7 +22,7 @@ defineProps<{ summary: TripSummary }>();
         </p>
       </div>
       <div class="card p-5">
-        <div class="mb-2 flex items-center gap-2 text-xs font-bold uppercase text-slate-500">
+        <div class="mb-2 flex items-center gap-2 text-xs font-bold uppercase text-slate-600">
           <TrendingUp :size="16" /> Total Pengeluaran
         </div>
         <p class="text-xl font-extrabold" data-testid="total-expenses">
@@ -30,7 +30,7 @@ defineProps<{ summary: TripSummary }>();
         </p>
       </div>
       <div class="card p-5">
-        <div class="mb-2 flex items-center gap-2 text-xs font-bold uppercase text-slate-500">
+        <div class="mb-2 flex items-center gap-2 text-xs font-bold uppercase text-slate-600">
           <PiggyBank :size="16" /> Sisa Anggaran
         </div>
         <p
@@ -58,14 +58,14 @@ defineProps<{ summary: TripSummary }>();
       </div>
 
       <h3 class="mb-3 mt-6 text-sm font-bold text-slate-700">Rincian per Kategori</h3>
-      <p v-if="summary.by_category.length === 0" class="text-sm text-slate-400">
+      <p v-if="summary.by_category.length === 0" class="text-sm text-slate-600">
         Belum ada pengeluaran yang tercatat.
       </p>
       <ul v-else class="space-y-3">
         <li v-for="item in summary.by_category" :key="item.category" data-testid="category-row">
           <div class="mb-1 flex justify-between text-sm">
             <span class="font-medium">{{ item.category }}</span>
-            <span class="text-slate-500">{{ formatCurrency(item.total) }}</span>
+            <span class="text-slate-600">{{ formatCurrency(item.total) }}</span>
           </div>
           <div class="h-2 overflow-hidden rounded-full bg-slate-100">
             <div

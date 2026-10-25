@@ -48,6 +48,7 @@ describe("DetailPage", () => {
     vi.mocked(tripApi.getTrip).mockReturnValue(pending.promise);
     const { wrapper } = await renderWithProviders(DetailPage, { route: "/trips/1" });
     expect(wrapper.text()).toContain("Memuat detail perjalanan...");
+    expect(wrapper.find("h1").text()).toBe("Detail Perjalanan");
     pending.resolve(makeDetail());
     await flushPromises();
     expect(wrapper.text()).not.toContain("Memuat detail perjalanan...");

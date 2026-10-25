@@ -20,8 +20,12 @@ onMounted(async () => {
 <template>
   <div class="min-h-screen">
     <NavbarComponent />
-    <main v-if="isReady" class="mx-auto max-w-6xl px-4 py-8">
-      <RouterView />
+    <main class="mx-auto max-w-6xl px-4 py-8">
+      <RouterView v-if="isReady" />
+      <template v-else>
+        <h1 class="sr-only">TripBuddy</h1>
+        <p class="text-sm text-slate-600" role="status">Memuat...</p>
+      </template>
     </main>
   </div>
 </template>

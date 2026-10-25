@@ -49,7 +49,7 @@ async function onSubmit() {
     <form class="card w-full max-w-lg space-y-4 p-6 shadow-2xl" @submit.prevent="onSubmit">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-extrabold">Catat Pengeluaran</h2>
-        <button type="button" class="rounded-lg p-1 text-slate-400 hover:bg-slate-100" aria-label="Tutup" @click="emit('close')">
+        <button type="button" class="rounded-lg p-1 text-slate-500 hover:bg-slate-100" aria-label="Tutup" @click="emit('close')">
           <X :size="20" />
         </button>
       </div>

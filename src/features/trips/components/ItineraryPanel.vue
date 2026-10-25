@@ -29,7 +29,7 @@ const groups = computed(() => {
       </button>
     </div>
 
-    <p v-if="groups.length === 0" class="card p-8 text-center text-sm text-slate-400">
+    <p v-if="groups.length === 0" class="card p-8 text-center text-sm text-slate-600">
       Belum ada agenda. Mulai susun kegiatan hari pertamamu!
     </p>
 
@@ -41,21 +41,21 @@ const groups = computed(() => {
         <li v-for="item in group.items" :key="item.id" class="flex items-start justify-between gap-3 px-5 py-4" data-testid="itinerary-item">
           <div class="space-y-1">
             <p class="font-semibold">{{ item.title }}</p>
-            <p v-if="item.time" class="flex items-center gap-1.5 text-xs text-slate-500">
+            <p v-if="item.time" class="flex items-center gap-1.5 text-xs text-slate-600">
               <Clock :size="12" /> {{ item.time }}
             </p>
-            <p v-if="item.location" class="flex items-center gap-1.5 text-xs text-slate-500">
+            <p v-if="item.location" class="flex items-center gap-1.5 text-xs text-slate-600">
               <MapPin :size="12" /> {{ item.location }}
             </p>
-            <p v-if="item.notes" class="flex items-center gap-1.5 text-xs text-slate-500">
+            <p v-if="item.notes" class="flex items-center gap-1.5 text-xs text-slate-600">
               <StickyNote :size="12" /> {{ item.notes }}
             </p>
           </div>
           <div class="flex shrink-0 gap-1">
-            <button class="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-brand-600" aria-label="Ubah agenda" @click="$emit('edit', item)">
+            <button class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-600" aria-label="Ubah agenda" @click="$emit('edit', item)">
               <Pencil :size="16" />
             </button>
-            <button class="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600" aria-label="Hapus agenda" @click="$emit('delete', item)">
+            <button class="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600" aria-label="Hapus agenda" @click="$emit('delete', item)">
               <Trash2 :size="16" />
             </button>
           </div>

@@ -11,10 +11,10 @@
 
 @layer components {
   .input-field {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100;
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-500 focus:border-brand-500 focus:ring-4 focus:ring-brand-100;
   }
   .label-field {
-    @apply mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500;
+    @apply mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-600;
   }
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60;
