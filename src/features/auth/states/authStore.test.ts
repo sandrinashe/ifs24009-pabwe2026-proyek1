@@ -2,14 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import * as authApi from "../api/authApi";
 import { getAccessToken, putAccessToken } from "../../../helpers/apiHelper";
-import { showErrorDialog, showSuccessDialog } from "../../../helpers/toolsHelper";
 import { useAuthStore } from "./authStore";
 
 vi.mock("../api/authApi");
-vi.mock("../../../helpers/toolsHelper", () => ({
-  showErrorDialog: vi.fn(),
-  showSuccessDialog: vi.fn(),
-}));
 
 const user = { id: 1, name: "Budi", email: "budi@example.com" };
 
@@ -22,32 +17,41 @@ describe("authStore", () => {
     vi.mocked(authApi.login).mockResolvedValue({ token: "tok", user });
     const store = useAuthStore();
     expect(store.isAuthenticated).toBe(false);
-    expect(await store.asyncLogin("a@b.c", "rahasia")).toBe(true);
+    expect(await store.asyncLogin("a@b.c", "rahasia")).toEqual({
+      success: true,
+      message: "",
+    });
     expect(getAccessToken()).toBe("tok");
     expect(store.user).toEqual(user);
     expect(store.isAuthenticated).toBe(true);
   });
 
-  it("asyncLogin menampilkan error jika gagal", async () => {
+  it("asyncLogin melaporkan error jika gagal", async () => {
     vi.mocked(authApi.login).mockRejectedValue(new Error("Email atau password salah"));
     const store = useAuthStore();
-    expect(await store.asyncLogin("a@b.c", "salah")).toBe(false);
-    expect(showErrorDialog).toHaveBeenCalledWith("Email atau password salah");
+    expect(await store.asyncLogin("a@b.c", "salah")).toEqual({
+      success: false,
+      message: "Email atau password salah",
+    });
     expect(store.user).toBeNull();
   });
 
-  it("asyncRegister menampilkan notifikasi sukses", async () => {
+  it("asyncRegister melaporkan pesan sukses", async () => {
     vi.mocked(authApi.register).mockResolvedValue(user);
     const store = useAuthStore();
-    expect(await store.asyncRegister("Budi", "a@b.c", "rahasia")).toBe(true);
-    expect(showSuccessDialog).toHaveBeenCalled();
+    expect(await store.asyncRegister("Budi", "a@b.c", "rahasia")).toEqual({
+      success: true,
+      message: "Registrasi berhasil, silakan masuk",
+    });
   });
 
-  it("asyncRegister menampilkan error jika gagal", async () => {
+  it("asyncRegister melaporkan error jika gagal", async () => {
     vi.mocked(authApi.register).mockRejectedValue(new Error("Email sudah terdaftar"));
     const store = useAuthStore();
-    expect(await store.asyncRegister("Budi", "a@b.c", "rahasia")).toBe(false);
-    expect(showErrorDialog).toHaveBeenCalledWith("Email sudah terdaftar");
+    expect(await store.asyncRegister("Budi", "a@b.c", "rahasia")).toEqual({
+      success: false,
+      message: "Email sudah terdaftar",
+    });
   });
 
   describe("asyncRestoreSession", () => {
@@ -82,22 +86,26 @@ describe("authStore", () => {
   });
 
   describe("asyncUpdateProfile", () => {
-    it("memperbarui pengguna dan menampilkan notifikasi sukses", async () => {
+    it("memperbarui pengguna dan melaporkan sukses", async () => {
       const updated = { ...user, name: "Budi Baru", avatar: null };
       vi.mocked(authApi.updateProfile).mockResolvedValue(updated);
       const store = useAuthStore();
-      expect(await store.asyncUpdateProfile({ name: "Budi Baru" })).toBe(true);
+      expect(await store.asyncUpdateProfile({ name: "Budi Baru" })).toEqual({
+        success: true,
+        message: "Profil berhasil diperbarui",
+      });
       expect(authApi.updateProfile).toHaveBeenCalledWith({ name: "Budi Baru" });
       expect(store.user).toEqual(updated);
-      expect(showSuccessDialog).toHaveBeenCalledWith("Profil berhasil diperbarui");
     });
 
-    it("menampilkan error dan mempertahankan data lama jika gagal", async () => {
+    it("melaporkan error dan mempertahankan data lama jika gagal", async () => {
       vi.mocked(authApi.updateProfile).mockRejectedValue(new Error("Gambar terlalu besar"));
       const store = useAuthStore();
       store.user = user;
-      expect(await store.asyncUpdateProfile({ name: "X" })).toBe(false);
-      expect(showErrorDialog).toHaveBeenCalledWith("Gambar terlalu besar");
+      expect(await store.asyncUpdateProfile({ name: "X" })).toEqual({
+        success: false,
+        message: "Gambar terlalu besar",
+      });
       expect(store.user).toEqual(user);
     });
   });

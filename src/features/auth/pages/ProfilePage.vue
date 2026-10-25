@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useAuthStore } from "../states/authStore";
+import { notifyResult } from "../../../helpers/notifyHelper";
 import ImagePicker from "../../common/components/ImagePicker.vue";
 
 const auth = useAuthStore();
@@ -10,7 +11,9 @@ const isSubmitting = ref(false);
 
 async function onSubmit() {
   isSubmitting.value = true;
-  await auth.asyncUpdateProfile({ name: name.value, avatar: avatar.value });
+  notifyResult(
+    await auth.asyncUpdateProfile({ name: name.value, avatar: avatar.value })
+  );
   isSubmitting.value = false;
 }
 </script>

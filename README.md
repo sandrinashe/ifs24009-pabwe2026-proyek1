@@ -23,6 +23,23 @@ cp .env.example .env
 bun run dev            # http://localhost:3000
 ```
 
+## Arsitektur singkat
+
+- **Routing**: dikelola Nuxt (`NuxtPage`). Halaman feature-based didaftarkan di `src/routes.ts` lewat hook `pages:extend` (`nuxt.config.ts`); akses dijaga middleware global `src/middleware/auth.global.ts` berdasarkan meta `requiresAuth` / `guestOnly`.
+- **State**: store Pinia hanya mengembalikan `ActionResult` (`{ success, message }`); notifikasi UI ditampilkan komponen lewat `notifyResult` (`src/helpers/notifyHelper.ts`).
+- **Token**: disimpan di cookie `SameSite=Strict` (+ `Secure` di HTTPS), bukan localStorage.
+- **Gambar**: dikompres di browser lalu diunggah sebagai `multipart/form-data` ke `POST /uploads` (field `file`); database hanya menyimpan URL.
+
+### Kontrak endpoint upload (back-end)
+
+`POST {VITE_API_BASEURL}/uploads` (butuh `Authorization: Bearer`), body `multipart/form-data` field `file` (JPEG), respons:
+
+```json
+{ "success": true, "message": "ok", "data": { "url": "https://.../uploads/abc.jpg" } }
+```
+
+Kolom `avatar` dan `receipt_image` di back-end berisi URL tersebut (VARCHAR), bukan base64.
+
 ## Variabel lingkungan
 
 | Variabel | Fungsi |

@@ -6,10 +6,7 @@ import * as expenseApi from "../api/expenseApi";
 import type { Trip, TripDetail, TripPayload } from "../api/tripApi";
 import type { Itinerary, ItineraryPayload } from "../api/itineraryApi";
 import type { Expense, ExpensePayload } from "../api/expenseApi";
-import {
-  showErrorDialog,
-  showSuccessDialog,
-} from "../../../helpers/toolsHelper";
+import type { ActionResult } from "../../../helpers/notifyHelper";
 
 export const useTripsStore = defineStore("trips", () => {
   const trips = ref<Trip[]>([]);
@@ -18,18 +15,25 @@ export const useTripsStore = defineStore("trips", () => {
   const expenses = ref<Expense[]>([]);
   const isLoading = ref(false);
 
-  /** Menjalankan aksi async; error ditampilkan lewat dialog dan dikembalikan sebagai false. */
-  async function run(action: () => Promise<void>): Promise<boolean> {
+  /**
+   * Menjalankan aksi async dan mengembalikan hasilnya sebagai ActionResult.
+   * Store tidak menampilkan notifikasi; itu tanggung jawab komponen pemanggil.
+   */
+  async function run(
+    action: () => Promise<void>,
+    successMessage = ""
+  ): Promise<ActionResult> {
     try {
       await action();
-      return true;
+      return { success: true, message: successMessage };
     } catch (error) {
-      showErrorDialog((error as Error).message);
-      return false;
+      return { success: false, message: (error as Error).message };
     }
   }
 
-  async function withLoading(action: () => Promise<void>): Promise<boolean> {
+  async function withLoading(
+    action: () => Promise<void>
+  ): Promise<ActionResult> {
     isLoading.value = true;
     const result = await run(action);
     isLoading.value = false;
@@ -58,56 +62,57 @@ export const useTripsStore = defineStore("trips", () => {
     });
 
   const asyncSaveTrip = (payload: TripPayload, id?: number) =>
-    run(async () => {
-      if (id === undefined) {
-        await tripApi.createTrip(payload);
-        showSuccessDialog("Perjalanan berhasil dibuat");
-      } else {
-        await tripApi.updateTrip(id, payload);
-        showSuccessDialog("Perjalanan berhasil diperbarui");
-      }
-    });
+    run(
+      async () => {
+        if (id === undefined) await tripApi.createTrip(payload);
+        else await tripApi.updateTrip(id, payload);
+      },
+      id === undefined
+        ? "Perjalanan berhasil dibuat"
+        : "Perjalanan berhasil diperbarui"
+    );
 
   const asyncDeleteTrip = (id: number) =>
     run(async () => {
       await tripApi.deleteTrip(id);
-      showSuccessDialog("Perjalanan berhasil dihapus");
-    });
+    }, "Perjalanan berhasil dihapus");
 
   const asyncSaveItinerary = (payload: ItineraryPayload, id?: number) =>
-    run(async () => {
-      if (id === undefined) {
-        await itineraryApi.createItinerary(current.value!.id, payload);
-        showSuccessDialog("Agenda berhasil ditambahkan");
-      } else {
-        await itineraryApi.updateItinerary(id, payload);
-        showSuccessDialog("Agenda berhasil diperbarui");
-      }
-      itineraries.value = await itineraryApi.getItineraries(current.value!.id);
-    });
+    run(
+      async () => {
+        if (id === undefined) {
+          await itineraryApi.createItinerary(current.value!.id, payload);
+        } else {
+          await itineraryApi.updateItinerary(id, payload);
+        }
+        itineraries.value = await itineraryApi.getItineraries(
+          current.value!.id
+        );
+      },
+      id === undefined
+        ? "Agenda berhasil ditambahkan"
+        : "Agenda berhasil diperbarui"
+    );
 
   const asyncDeleteItinerary = (id: number) =>
     run(async () => {
       await itineraryApi.deleteItinerary(id);
-      showSuccessDialog("Agenda berhasil dihapus");
       itineraries.value = await itineraryApi.getItineraries(current.value!.id);
-    });
+    }, "Agenda berhasil dihapus");
 
   const asyncSaveExpense = (payload: ExpensePayload) =>
     run(async () => {
       await expenseApi.createExpense(current.value!.id, payload);
-      showSuccessDialog("Pengeluaran berhasil dicatat");
       expenses.value = await expenseApi.getExpenses(current.value!.id);
       await refreshCurrent();
-    });
+    }, "Pengeluaran berhasil dicatat");
 
   const asyncDeleteExpense = (id: number) =>
     run(async () => {
       await expenseApi.deleteExpense(id);
-      showSuccessDialog("Pengeluaran berhasil dihapus");
       expenses.value = await expenseApi.getExpenses(current.value!.id);
       await refreshCurrent();
-    });
+    }, "Pengeluaran berhasil dihapus");
 
   return {
     trips,

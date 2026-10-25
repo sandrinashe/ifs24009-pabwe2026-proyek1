@@ -3,6 +3,7 @@ import { reactive, ref, watch } from "vue";
 import { X } from "lucide-vue-next";
 import type { Trip } from "../api/tripApi";
 import { useTripsStore } from "../states/tripsStore";
+import { notifyResult } from "../../../helpers/notifyHelper";
 
 const props = defineProps<{ open: boolean; trip: Trip | null }>();
 const emit = defineEmits<{ (e: "close"): void; (e: "saved"): void }>();
@@ -32,9 +33,11 @@ watch(
 
 async function onSubmit() {
   isSubmitting.value = true;
-  const success = await store.asyncSaveTrip(
-    { ...form, total_budget: Number(form.total_budget) },
-    props.trip?.id
+  const success = notifyResult(
+    await store.asyncSaveTrip(
+      { ...form, total_budget: Number(form.total_budget) },
+      props.trip?.id
+    )
   );
   isSubmitting.value = false;
   if (success) emit("saved");

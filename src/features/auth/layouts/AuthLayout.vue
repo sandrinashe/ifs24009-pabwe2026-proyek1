@@ -1,15 +1,6 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { RouterLink, RouterView, useRouter } from "vue-router";
+import { RouterLink } from "vue-router";
 import { Plane } from "lucide-vue-next";
-import { useAuthStore } from "../states/authStore";
-
-const router = useRouter();
-const auth = useAuthStore();
-
-onMounted(async () => {
-  if (await auth.asyncRestoreSession()) router.replace("/");
-});
 </script>
 
 <template>
@@ -46,7 +37,7 @@ onMounted(async () => {
             Daftar Baru
           </RouterLink>
         </nav>
-        <RouterView />
+        <NuxtPage />
       </div>
     </div>
   </main>

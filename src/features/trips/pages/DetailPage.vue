@@ -8,6 +8,7 @@ import { useTripsStore } from "../states/tripsStore";
 import BudgetSummary from "../components/BudgetSummary.vue";
 import ItineraryPanel from "../components/ItineraryPanel.vue";
 import ExpensePanel from "../components/ExpensePanel.vue";
+import { notifyResult } from "../../../helpers/notifyHelper";
 import TripModal from "../modals/TripModal.vue";
 import ItineraryModal from "../modals/ItineraryModal.vue";
 import ExpenseModal from "../modals/ExpenseModal.vue";
@@ -28,8 +29,11 @@ const isItineraryModalOpen = ref(false);
 const isExpenseModalOpen = ref(false);
 const editingItinerary = ref<Itinerary | null>(null);
 
+const loadDetail = async () =>
+  notifyResult(await store.asyncFetchTripDetail(tripId));
+
 onMounted(async () => {
-  const success = await store.asyncFetchTripDetail(tripId);
+  const success = await loadDetail();
   if (!success) router.replace("/");
 });
 
@@ -42,19 +46,19 @@ async function onDeleteTrip() {
     "Hapus perjalanan?",
     "Seluruh agenda dan pengeluaran terkait ikut terhapus.",
     async () => {
-      if (await store.asyncDeleteTrip(tripId)) router.replace("/");
+      if (notifyResult(await store.asyncDeleteTrip(tripId))) router.replace("/");
     }
   );
 }
 
 const onDeleteItinerary = (item: Itinerary) =>
   confirmThen("Hapus agenda?", `"${item.title}" akan dihapus.`, () =>
-    store.asyncDeleteItinerary(item.id)
+    store.asyncDeleteItinerary(item.id).then(notifyResult)
   );
 
 const onDeleteExpense = (item: Expense) =>
   confirmThen("Hapus pengeluaran?", `"${item.name}" akan dihapus.`, () =>
-    store.asyncDeleteExpense(item.id)
+    store.asyncDeleteExpense(item.id).then(notifyResult)
   );
 
 function openAddItinerary() {
@@ -69,7 +73,7 @@ function openEditItinerary(item: Itinerary) {
 
 async function onTripSaved() {
   isTripModalOpen.value = false;
-  await store.asyncFetchTripDetail(tripId);
+  await loadDetail();
 }
 </script>
 

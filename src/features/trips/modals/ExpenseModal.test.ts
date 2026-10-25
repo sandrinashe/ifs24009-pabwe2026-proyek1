@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises } from "@vue/test-utils";
+import { uploadImage } from "../../common/api/uploadApi";
 import { compressImage } from "../../../helpers/imageHelper";
 import * as tripApi from "../api/tripApi";
 import * as expenseApi from "../api/expenseApi";
@@ -15,6 +16,7 @@ import ExpenseModal from "./ExpenseModal.vue";
 vi.mock("../api/tripApi");
 vi.mock("../api/expenseApi");
 vi.mock("../../../helpers/imageHelper");
+vi.mock("../../common/api/uploadApi");
 vi.mock("../../../helpers/toolsHelper", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../../../helpers/toolsHelper")>()),
   showErrorDialog: vi.fn(),
@@ -69,7 +71,8 @@ describe("ExpenseModal", () => {
   });
 
   it("mengirim foto bukti yang dipilih dan mengosongkannya saat dibuka kembali", async () => {
-    vi.mocked(compressImage).mockResolvedValue("data:image/jpeg;base64,AAAA");
+    vi.mocked(compressImage).mockResolvedValue(new Blob(["x"]));
+    vi.mocked(uploadImage).mockResolvedValue({ url: "https://cdn.example.com/uploads/a.jpg" });
     const { wrapper } = await render({ open: true, defaultDate: "2026-12-01" });
     const picker = wrapper.find("#ex-receipt");
     Object.defineProperty(picker.element, "files", {
@@ -78,7 +81,7 @@ describe("ExpenseModal", () => {
     });
     await picker.trigger("change");
     await flushPromises();
-    expect(wrapper.find("img").attributes("src")).toBe("data:image/jpeg;base64,AAAA");
+    expect(wrapper.find("img").attributes("src")).toBe("https://cdn.example.com/uploads/a.jpg");
 
     await wrapper.find("#ex-name").setValue("Makan malam");
     await wrapper.find("#ex-amount").setValue("150000");
@@ -86,7 +89,7 @@ describe("ExpenseModal", () => {
     await flushPromises();
     expect(expenseApi.createExpense).toHaveBeenCalledWith(
       1,
-      expect.objectContaining({ receipt_image: "data:image/jpeg;base64,AAAA" })
+      expect.objectContaining({ receipt_image: "https://cdn.example.com/uploads/a.jpg" })
     );
 
     await wrapper.setProps({ open: false });

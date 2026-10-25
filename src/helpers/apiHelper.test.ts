@@ -25,6 +25,37 @@ describe("apiHelper", () => {
     expect(getAccessToken()).toBeNull();
   });
 
+  it("menyimpan token di cookie SameSite=Strict, bukan di localStorage", () => {
+    const setter = vi.spyOn(document, "cookie", "set");
+    putAccessToken("a b;c");
+    expect(setter.mock.calls[0][0]).toMatch(
+      /^tripbuddy_token=a%20b%3Bc; path=\/; SameSite=Strict; max-age=\d+$/
+    );
+    expect(getAccessToken()).toBe("a b;c");
+    expect(localStorage.length).toBe(0);
+    setter.mockRestore();
+  });
+
+  it("menambahkan atribut Secure pada koneksi HTTPS", () => {
+    vi.stubGlobal("location", { protocol: "https:" });
+    const setter = vi.spyOn(document, "cookie", "set");
+    putAccessToken("tok");
+    expect(setter.mock.calls[0][0]).toContain("; Secure;");
+    setter.mockRestore();
+    vi.unstubAllGlobals();
+  });
+
+  it("mengirim FormData apa adanya tanpa Content-Type JSON", async () => {
+    respond({ success: true, message: "ok", data: { url: "u" } });
+    const body = new FormData();
+    await apiFetch("/uploads", { method: "POST", body });
+    expect(fetchMock).toHaveBeenCalledWith(`${API_BASEURL}/uploads`, {
+      method: "POST",
+      headers: {},
+      body,
+    });
+  });
+
   it("mengirim GET tanpa body dan tanpa token", async () => {
     respond({ success: true, message: "ok", data: [1, 2] });
     const data = await apiFetch<number[]>("/trips");

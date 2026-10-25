@@ -1,4 +1,5 @@
 const TOKEN_KEY = "tripbuddy_token";
+const TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -8,16 +9,31 @@ export interface ApiResponse<T> {
 
 export interface ApiOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE";
+  /** Objek biasa dikirim sebagai JSON, FormData dikirim sebagai multipart. */
   body?: unknown;
 }
 
-export const getAccessToken = (): string | null =>
-  localStorage.getItem(TOKEN_KEY);
+/**
+ * Token disimpan di cookie (SameSite=Strict, Secure di HTTPS), bukan localStorage,
+ * sehingga tidak ikut terkirim lintas situs dan punya masa berlaku.
+ */
+export const getAccessToken = (): string | null => {
+  const entry = document.cookie
+    .split("; ")
+    .find((item) => item.startsWith(`${TOKEN_KEY}=`));
+  return entry ? decodeURIComponent(entry.slice(TOKEN_KEY.length + 1)) : null;
+};
 
-export const putAccessToken = (token: string): void =>
-  localStorage.setItem(TOKEN_KEY, token);
+const cookieFlags = (): string =>
+  `; path=/; SameSite=Strict${location.protocol === "https:" ? "; Secure" : ""}`;
 
-export const removeAccessToken = (): void => localStorage.removeItem(TOKEN_KEY);
+export const putAccessToken = (token: string): void => {
+  document.cookie = `${TOKEN_KEY}=${encodeURIComponent(token)}${cookieFlags()}; max-age=${TOKEN_MAX_AGE_SECONDS}`;
+};
+
+export const removeAccessToken = (): void => {
+  document.cookie = `${TOKEN_KEY}=${cookieFlags()}; max-age=0`;
+};
 
 export async function apiFetch<T>(
   path: string,
@@ -25,8 +41,10 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const token = getAccessToken();
   const hasBody = options.body !== undefined;
+  const isForm = options.body instanceof FormData;
   const headers: Record<string, string> = {};
-  if (hasBody) headers["Content-Type"] = "application/json";
+  // Untuk FormData, browser mengisi Content-Type (beserta boundary) sendiri.
+  if (hasBody && !isForm) headers["Content-Type"] = "application/json";
   if (token) headers.Authorization = `Bearer ${token}`;
 
   let response: Response;
@@ -35,7 +53,11 @@ export async function apiFetch<T>(
     response = await fetch(`${API_BASEURL}${path}`, {
       method: options.method ?? "GET",
       headers,
-      body: hasBody ? JSON.stringify(options.body) : undefined,
+      body: !hasBody
+        ? undefined
+        : isForm
+          ? (options.body as FormData)
+          : JSON.stringify(options.body),
     });
     json = await response.json();
   } catch {

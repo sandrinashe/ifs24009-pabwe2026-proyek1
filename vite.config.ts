@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
         reporter: ["text", "json", "html", "lcov"],
         include: ["src/**/*.{js,ts,vue}"],
         exclude: [
-          "src/router.options.ts",
+          "src/middleware/**",
           "src/setupTests.ts",
           "src/test-utils.ts",
           "src/**/*.d.ts",

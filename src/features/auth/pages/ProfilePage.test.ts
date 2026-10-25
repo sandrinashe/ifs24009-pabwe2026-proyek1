@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises } from "@vue/test-utils";
 import * as authApi from "../api/authApi";
+import { uploadImage } from "../../common/api/uploadApi";
 import { compressImage } from "../../../helpers/imageHelper";
 import { showSuccessDialog } from "../../../helpers/toolsHelper";
 import { createMockPinia, deferred, renderWithProviders } from "../../../test-utils";
@@ -9,13 +10,14 @@ import ProfilePage from "./ProfilePage.vue";
 
 vi.mock("../api/authApi");
 vi.mock("../../../helpers/imageHelper");
+vi.mock("../../common/api/uploadApi");
 vi.mock("../../../helpers/toolsHelper", () => ({
   showErrorDialog: vi.fn(),
   showSuccessDialog: vi.fn(),
 }));
 
 const user = { id: 1, name: "Budi", email: "budi@example.com", avatar: null };
-const AVATAR = "data:image/jpeg;base64,AAAA";
+const AVATAR = "https://cdn.example.com/uploads/a.jpg";
 
 async function render(current: authApi.User | null = user) {
   const pinia = createMockPinia();
@@ -42,7 +44,8 @@ describe("ProfilePage", () => {
       ...user,
       ...payload,
     }));
-    vi.mocked(compressImage).mockResolvedValue(AVATAR);
+    vi.mocked(compressImage).mockResolvedValue(new Blob(["x"]));
+    vi.mocked(uploadImage).mockResolvedValue({ url: AVATAR });
   });
 
   it("menampilkan satu h1 dan data pengguna, dengan email hanya-baca", async () => {

@@ -4,6 +4,7 @@ import { RouterLink } from "vue-router";
 import { CalendarDays, MapPin, Pencil, Plus, Trash2 } from "lucide-vue-next";
 import type { Trip } from "../api/tripApi";
 import { useTripsStore } from "../states/tripsStore";
+import { notifyResult } from "../../../helpers/notifyHelper";
 import TripModal from "../modals/TripModal.vue";
 import {
   formatCurrency,
@@ -17,9 +18,9 @@ const store = useTripsStore();
 const isModalOpen = ref(false);
 const editingTrip = ref<Trip | null>(null);
 
-onMounted(() => {
-  store.asyncFetchTrips();
-});
+const loadTrips = async () => notifyResult(await store.asyncFetchTrips());
+
+onMounted(loadTrips);
 
 function openCreate() {
   editingTrip.value = null;
@@ -33,7 +34,7 @@ function openEdit(trip: Trip) {
 
 async function onSaved() {
   isModalOpen.value = false;
-  await store.asyncFetchTrips();
+  await loadTrips();
 }
 
 async function onDelete(trip: Trip) {
@@ -42,8 +43,8 @@ async function onDelete(trip: Trip) {
     `"${trip.title}" beserta agenda dan pengeluarannya akan dihapus permanen.`
   );
   if (!confirmed) return;
-  await store.asyncDeleteTrip(trip.id);
-  await store.asyncFetchTrips();
+  notifyResult(await store.asyncDeleteTrip(trip.id));
+  await loadTrips();
 }
 
 const usageOf = (trip: Trip) =>

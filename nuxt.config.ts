@@ -1,4 +1,7 @@
+import type { NuxtPage } from "nuxt/schema";
+import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
+import { pageRoutes, type PageRoute } from "./src/routes";
 
 const customPort = Number(process.env.APP_PORT || process.env.PORT) || 3000;
 
@@ -14,8 +17,19 @@ export default defineNuxtConfig({
   // Let Nuxt look into src/ for application source files
   srcDir: "src/",
 
-  // Enable vue-router; routes are supplied by src/router.options.ts
+  // Routing ditangani Nuxt; halaman feature-based didaftarkan lewat hook di bawah.
   pages: true,
+
+  hooks: {
+    "pages:extend"(pages) {
+      const toNuxtPage = (route: PageRoute): NuxtPage => ({
+        ...route,
+        file: fileURLToPath(new URL(`./src/${route.file}`, import.meta.url)),
+        children: route.children?.map(toNuxtPage),
+      });
+      pages.splice(0, pages.length, ...pageRoutes.map(toNuxtPage));
+    },
+  },
 
   css: ["~/index.css"],
 

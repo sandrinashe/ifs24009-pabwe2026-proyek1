@@ -1,47 +1,58 @@
-import type { RouteRecordRaw } from "vue-router";
+/**
+ * Definisi halaman aplikasi. Struktur feature-based dipertahankan, dan halaman
+ * didaftarkan ke Nuxt lewat hook `pages:extend` di nuxt.config.ts, sehingga
+ * routing tetap ditangani Nuxt (NuxtPage, middleware, typed route meta).
+ */
+export interface PageRoute {
+  name?: string;
+  path: string;
+  /** Path komponen relatif terhadap `src/`. */
+  file: string;
+  redirect?: string;
+  meta?: { requiresAuth?: boolean; guestOnly?: boolean };
+  children?: PageRoute[];
+}
 
-export const routes: RouteRecordRaw[] = [
+export const pageRoutes: PageRoute[] = [
   {
     path: "/auth",
-    component: () => import("./features/auth/layouts/AuthLayout.vue"),
+    file: "features/auth/layouts/AuthLayout.vue",
     redirect: "/auth/login",
+    meta: { guestOnly: true },
     children: [
       {
         path: "login",
         name: "login",
-        component: () => import("./features/auth/pages/LoginPage.vue"),
+        file: "features/auth/pages/LoginPage.vue",
       },
       {
         path: "register",
         name: "register",
-        component: () => import("./features/auth/pages/RegisterPage.vue"),
+        file: "features/auth/pages/RegisterPage.vue",
       },
     ],
   },
   {
     path: "/",
-    component: () => import("./features/trips/layouts/TripLayout.vue"),
+    file: "features/trips/layouts/TripLayout.vue",
+    meta: { requiresAuth: true },
     children: [
-      {
-        path: "",
-        name: "home",
-        component: () => import("./features/trips/pages/HomePage.vue"),
-      },
+      { path: "", name: "home", file: "features/trips/pages/HomePage.vue" },
       {
         path: "profile",
         name: "profile",
-        component: () => import("./features/auth/pages/ProfilePage.vue"),
+        file: "features/auth/pages/ProfilePage.vue",
       },
       {
         path: "trips/:tripId",
         name: "trip-detail",
-        component: () => import("./features/trips/pages/DetailPage.vue"),
+        file: "features/trips/pages/DetailPage.vue",
       },
     ],
   },
   {
     path: "/:pathMatch(.*)*",
     name: "not-found",
-    component: () => import("./features/common/pages/NotFoundPage.vue"),
+    file: "features/common/pages/NotFoundPage.vue",
   },
 ];

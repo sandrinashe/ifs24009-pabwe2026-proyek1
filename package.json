@@ -6,8 +6,6 @@
     "dev": "nuxt dev",
     "build": "nuxt build",
     "preview": "nuxt preview",
-    "dev:vite": "vite",
-    "build:vite": "vite build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"

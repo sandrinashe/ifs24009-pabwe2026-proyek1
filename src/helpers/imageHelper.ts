@@ -20,14 +20,14 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 /**
- * Memperkecil gambar di browser dan mengembalikannya sebagai data URL JPEG.
- * Sisi terpanjang dibatasi `maxSize` piksel agar ukurannya kecil untuk disimpan di database.
+ * Memperkecil gambar di browser dan mengembalikannya sebagai Blob JPEG yang siap diunggah.
+ * Sisi terpanjang dibatasi `maxSize` piksel agar ukuran unggahan tetap kecil.
  */
 export async function compressImage(
   file: File,
   maxSize = 1024,
   quality = 0.75
-): Promise<string> {
+): Promise<Blob> {
   if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
     throw new Error("Format gambar harus JPG, PNG, atau WebP");
   }
@@ -45,5 +45,12 @@ export async function compressImage(
   context.fillStyle = "#ffffff";
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.drawImage(image, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL("image/jpeg", quality);
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) =>
+        blob ? resolve(blob) : reject(new Error("Gagal memproses gambar")),
+      "image/jpeg",
+      quality
+    );
+  });
 }

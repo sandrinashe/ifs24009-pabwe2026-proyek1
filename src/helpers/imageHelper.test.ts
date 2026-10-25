@@ -18,6 +18,7 @@ const makeFile = (type = "image/png") => new File(["isi"], "foto", { type });
 describe("compressImage", () => {
   const context = { fillStyle: "", fillRect: vi.fn(), drawImage: vi.fn() };
   let dimensions: [number, number];
+  let blob: Blob | null;
 
   beforeEach(() => {
     FakeImage.fail = false;
@@ -26,11 +27,13 @@ describe("compressImage", () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
       context as never
     );
-    vi.spyOn(HTMLCanvasElement.prototype, "toDataURL").mockImplementation(function (
-      this: HTMLCanvasElement
+    blob = new Blob(["jpeg"], { type: "image/jpeg" });
+    vi.spyOn(HTMLCanvasElement.prototype, "toBlob").mockImplementation(function (
+      this: HTMLCanvasElement,
+      callback: BlobCallback
     ) {
       dimensions = [this.width, this.height];
-      return "data:image/jpeg;base64,AAAA";
+      callback(blob);
     });
   });
 
@@ -39,11 +42,12 @@ describe("compressImage", () => {
     vi.restoreAllMocks();
   });
 
-  it("memperkecil gambar besar dan mengembalikan data URL JPEG", async () => {
+  it("memperkecil gambar besar dan mengembalikan Blob JPEG", async () => {
     const result = await compressImage(makeFile());
-    expect(result).toBe("data:image/jpeg;base64,AAAA");
+    expect(result).toBe(blob);
     expect(dimensions).toEqual([1024, 512]);
-    expect(HTMLCanvasElement.prototype.toDataURL).toHaveBeenCalledWith(
+    expect(HTMLCanvasElement.prototype.toBlob).toHaveBeenCalledWith(
+      expect.any(Function),
       "image/jpeg",
       0.75
     );
@@ -54,7 +58,8 @@ describe("compressImage", () => {
   it("mengikuti batas ukuran dan kualitas yang diberikan", async () => {
     await compressImage(makeFile("image/webp"), 256, 0.5);
     expect(dimensions).toEqual([256, 128]);
-    expect(HTMLCanvasElement.prototype.toDataURL).toHaveBeenCalledWith(
+    expect(HTMLCanvasElement.prototype.toBlob).toHaveBeenCalledWith(
+      expect.any(Function),
       "image/jpeg",
       0.5
     );
@@ -74,6 +79,11 @@ describe("compressImage", () => {
     const file = makeFile();
     Object.defineProperty(file, "size", { value: MAX_FILE_BYTES + 1 });
     await expect(compressImage(file)).rejects.toThrow(/maksimal 5 MB/);
+  });
+
+  it("menolak jika canvas gagal menghasilkan Blob", async () => {
+    blob = null;
+    await expect(compressImage(makeFile())).rejects.toThrow(/Gagal memproses/);
   });
 
   it("menolak jika browser tidak menyediakan canvas", async () => {

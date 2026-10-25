@@ -4,6 +4,7 @@ import { createPinia, setActivePinia, type Pinia } from "pinia";
 import {
   createMemoryHistory,
   createRouter,
+  RouterView,
   type RouteRecordRaw,
 } from "vue-router";
 import type { Trip, TripDetail } from "./features/trips/api/tripApi";
@@ -46,7 +47,8 @@ export async function renderWithProviders(
   await router.isReady();
   const wrapper = mount(component, {
     props,
-    global: { plugins: [pinia, router] },
+    // NuxtPage adalah komponen auto-import Nuxt; di test dipetakan ke RouterView.
+    global: { plugins: [pinia, router], components: { NuxtPage: RouterView } },
   });
   return { wrapper, router, pinia };
 }

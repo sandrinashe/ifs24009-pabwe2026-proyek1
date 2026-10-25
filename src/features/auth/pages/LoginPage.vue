@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { LogIn, Mail, Lock } from "lucide-vue-next";
 import { useInput } from "../../../hooks/useInput";
 import { useAuthStore } from "../states/authStore";
+import { notifyResult } from "../../../helpers/notifyHelper";
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -13,7 +14,9 @@ const isSubmitting = ref(false);
 
 async function onSubmit() {
   isSubmitting.value = true;
-  const success = await auth.asyncLogin(email.value, password.value);
+  const success = notifyResult(
+    await auth.asyncLogin(email.value, password.value)
+  );
   isSubmitting.value = false;
   if (success) router.replace("/");
 }

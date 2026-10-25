@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { uploadImage } from "../api/uploadApi";
 import { compressImage } from "../../../helpers/imageHelper";
 import { showErrorDialog } from "../../../helpers/toolsHelper";
 
@@ -14,14 +16,21 @@ const props = withDefaults(
 );
 const emit = defineEmits<{ (e: "update:modelValue", value: string | null): void }>();
 
+const isUploading = ref(false);
+
 async function onChange(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files![0];
   if (!file) return;
+  isUploading.value = true;
   try {
-    emit("update:modelValue", await compressImage(file, props.maxSize));
+    const blob = await compressImage(file, props.maxSize);
+    const { url } = await uploadImage(blob, `${Date.now()}.jpg`);
+    emit("update:modelValue", url);
   } catch (error) {
     showErrorDialog((error as Error).message);
+  } finally {
+    isUploading.value = false;
   }
   // Kosongkan agar file yang sama bisa dipilih ulang.
   input.value = "";
@@ -47,10 +56,14 @@ async function onChange(event: Event) {
         Belum ada gambar
       </div>
       <div class="min-w-0 space-y-2">
+        <p v-if="isUploading" class="text-xs text-slate-600" role="status">
+          Mengunggah gambar...
+        </p>
         <input
           :id="inputId"
           type="file"
           accept="image/png,image/jpeg,image/webp"
+          :disabled="isUploading"
           class="block w-full text-sm text-slate-700 file:mr-3 file:rounded-xl file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-brand-700"
           @change="onChange"
         />

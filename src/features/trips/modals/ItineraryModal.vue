@@ -3,6 +3,7 @@ import { reactive, ref, watch } from "vue";
 import { X } from "lucide-vue-next";
 import type { Itinerary } from "../api/itineraryApi";
 import { useTripsStore } from "../states/tripsStore";
+import { notifyResult } from "../../../helpers/notifyHelper";
 
 const props = defineProps<{ open: boolean; itinerary: Itinerary | null }>();
 const emit = defineEmits<{ (e: "close"): void; (e: "saved"): void }>();
@@ -32,9 +33,11 @@ watch(
 
 async function onSubmit() {
   isSubmitting.value = true;
-  const success = await store.asyncSaveItinerary(
-    { ...form, day_number: Number(form.day_number) },
-    props.itinerary?.id
+  const success = notifyResult(
+    await store.asyncSaveItinerary(
+      { ...form, day_number: Number(form.day_number) },
+      props.itinerary?.id
+    )
   );
   isSubmitting.value = false;
   if (success) emit("saved");

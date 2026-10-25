@@ -7,24 +7,28 @@ import {
   putAccessToken,
   removeAccessToken,
 } from "../../../helpers/apiHelper";
-import {
-  showErrorDialog,
-  showSuccessDialog,
-} from "../../../helpers/toolsHelper";
+import type { ActionResult } from "../../../helpers/notifyHelper";
 
 export const useAuthStore = defineStore("auth", () => {
   const user = ref<User | null>(null);
   const isAuthenticated = computed(() => user.value !== null);
 
-  async function asyncLogin(email: string, password: string): Promise<boolean> {
+  const failure = (error: unknown): ActionResult => ({
+    success: false,
+    message: (error as Error).message,
+  });
+
+  async function asyncLogin(
+    email: string,
+    password: string
+  ): Promise<ActionResult> {
     try {
       const result = await authApi.login(email, password);
       putAccessToken(result.token);
       user.value = result.user;
-      return true;
+      return { success: true, message: "" };
     } catch (error) {
-      showErrorDialog((error as Error).message);
-      return false;
+      return failure(error);
     }
   }
 
@@ -32,14 +36,15 @@ export const useAuthStore = defineStore("auth", () => {
     name: string,
     email: string,
     password: string
-  ): Promise<boolean> {
+  ): Promise<ActionResult> {
     try {
       await authApi.register(name, email, password);
-      showSuccessDialog("Registrasi berhasil, silakan masuk");
-      return true;
+      return {
+        success: true,
+        message: "Registrasi berhasil, silakan masuk",
+      };
     } catch (error) {
-      showErrorDialog((error as Error).message);
-      return false;
+      return failure(error);
     }
   }
 
@@ -56,14 +61,14 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  async function asyncUpdateProfile(payload: ProfilePayload): Promise<boolean> {
+  async function asyncUpdateProfile(
+    payload: ProfilePayload
+  ): Promise<ActionResult> {
     try {
       user.value = await authApi.updateProfile(payload);
-      showSuccessDialog("Profil berhasil diperbarui");
-      return true;
+      return { success: true, message: "Profil berhasil diperbarui" };
     } catch (error) {
-      showErrorDialog((error as Error).message);
-      return false;
+      return failure(error);
     }
   }
 
