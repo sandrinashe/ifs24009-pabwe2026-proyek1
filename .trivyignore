@@ -1,4 +1,5 @@
-# node-forge@1.4.0 (GHSA-86w9-cpqp-85rv) hanya terbawa lewat nuxt > nitropack > listhen
-# (server HTTPS untuk dev/preview). Tidak dipakai di runtime SPA hasil build,
-# dan belum ada versi node-forge yang memperbaikinya. Tinjau ulang saat ada rilis perbaikan.
+# node-forge@1.4.0 hanya terbawa lewat nuxt > nitropack > listhen (server HTTPS dev/preview).
+# Tidak dipakai di runtime SPA hasil build, dan belum ada versi perbaikan.
+# Tinjau ulang saat node-forge merilis perbaikan.
+CVE-2026-85393
 GHSA-86w9-cpqp-85rv
