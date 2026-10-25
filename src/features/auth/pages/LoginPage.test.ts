@@ -15,8 +15,8 @@ vi.mock("../../../helpers/toolsHelper", async (importOriginal) => ({
 const user = { id: 1, name: "Budi", email: "budi@example.com" };
 
 async function fillAndSubmit(wrapper: Awaited<ReturnType<typeof renderWithProviders>>["wrapper"]) {
-  await wrapper.find("#login-email").setValue("budi@example.com");
-  await wrapper.find("#login-password").setValue("rahasia123");
+  await wrapper.find("#username").setValue("budi@example.com");
+  await wrapper.find("#password").setValue("rahasia123");
   await wrapper.find("form").trigger("submit");
 }
 
@@ -33,6 +33,15 @@ describe("LoginPage", () => {
     await flushPromises();
     expect(authApi.login).toHaveBeenCalledWith("budi@example.com", "rahasia123");
     expect(router.currentRoute.value.path).toBe("/");
+  });
+
+  it("menyediakan elemen login dengan id untuk pengujian otomatis", async () => {
+    const { wrapper } = await renderWithProviders(LoginPage, {
+      route: "/auth/login",
+    });
+    expect(wrapper.find("#username").exists()).toBe(true);
+    expect(wrapper.find("#password").exists()).toBe(true);
+    expect(wrapper.find("#btn-submit").attributes("type")).toBe("submit");
   });
 
   it("menonaktifkan tombol selama proses login", async () => {
